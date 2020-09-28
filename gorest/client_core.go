@@ -9,18 +9,16 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/wgarcia4190/go-rest/core"
+
+	"github.com/wgarcia4190/go-rest/gomime"
 )
 
-const (
-	contentType     = "Content-Type"
-	jsonContentType = "application/json"
-	xmlContentType  = "application/xml"
-)
-
-func (c *httpClient) do(context context.Context, method string, url string, headers http.Header, body interface{}) (*Response, error) {
+func (c *httpClient) do(context context.Context, method string, url string, headers http.Header, body interface{}) (*core.Response, error) {
 	fullHeaders := c.getRequestHeaders(headers)
 
-	requestBody, bodyErr := c.getRequestBody(fullHeaders.Get(contentType), body)
+	requestBody, bodyErr := c.getRequestBody(fullHeaders.Get(gomime.HeaderContentType), body)
 
 	if bodyErr != nil {
 		return nil, errors.New("unable to marshal the body")
@@ -47,7 +45,7 @@ func (c *httpClient) do(context context.Context, method string, url string, head
 	}
 
 	defer response.Body.Close()
-	finalResponse := Response{
+	finalResponse := core.Response{
 		Status:     response.Status,
 		StatusCode: response.StatusCode,
 		Headers:    response.Header,
@@ -63,32 +61,12 @@ func (c *httpClient) getRequestBody(contentType string, body interface{}) ([]byt
 	}
 
 	switch strings.ToLower(contentType) {
-	case jsonContentType:
+	case gomime.ContentTypeJson:
 		return json.Marshal(body)
-	case xmlContentType:
+	case gomime.ContentTypeXml:
 		return xml.Marshal(body)
 
 	default:
 		return json.Marshal(body)
-	}
-}
-
-func (c *httpClient) getRequestHeaders(requestHeaders http.Header) http.Header {
-	result := make(http.Header)
-
-	// Add common headers to the request:
-	addHeaders(c.builder.headers, &result)
-
-	// Add custom headers to the request:
-	addHeaders(requestHeaders, &result)
-
-	return result
-}
-
-func addHeaders(headers http.Header, result *http.Header) {
-	for header, value := range headers {
-		if len(value) > 0 {
-			result.Set(header, value[0])
-		}
 	}
 }

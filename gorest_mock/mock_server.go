@@ -34,7 +34,7 @@ func StopMockServer() {
 	mockupServer.enabled = false
 }
 
-func FlushMocks() {
+func DeletehMocks() {
 	mockupServer.serverMutex.Lock()
 	defer mockupServer.serverMutex.Unlock()
 
@@ -51,7 +51,11 @@ func AddMock(mock Mock) {
 
 func (m *mockServer) getMockKey(method, url, body string) string {
 	hash := md5.New()
-	hash.Write([]byte(method + url + m.cleanBody(body)))
+	_, err := hash.Write([]byte(method + url + m.cleanBody(body)))
+
+	if err != nil {
+		panic("Mock key could not be generated")
+	}
 
 	return hex.EncodeToString(hash.Sum(nil))
 }
@@ -68,12 +72,12 @@ func (m *mockServer) cleanBody(body string) string {
 	return body
 }
 
-func (m *mockServer) getMock(method, url, body string) *Mock {
-	if !m.enabled {
+func GetMock(method, url, body string) *Mock {
+	if !mockupServer.enabled {
 		return nil
 	}
 
-	if mock := m.mocks[m.getMockKey(method, url, body)]; mock != nil {
+	if mock := mockupServer.mocks[mockupServer.getMockKey(method, url, body)]; mock != nil {
 		return mock
 	}
 

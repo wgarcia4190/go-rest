@@ -24,7 +24,7 @@ func TestGetEndpoints(t *testing.T) {
 
 	t.Run("TestErrorFetchingFromGithub", func(t *testing.T) {
 		// Initialization
-		gorest_mock.FlushMocks()
+		gorest_mock.DeletehMocks()
 		gorest_mock.AddMock(gorest_mock.Mock{
 			Method: http.MethodGet,
 			Url:    "https://api.github.com",
@@ -51,7 +51,7 @@ func TestGetEndpoints(t *testing.T) {
 
 	t.Run("TestErrorUnmarshalResponseBody", func(t *testing.T) {
 		// Initialization
-		gorest_mock.FlushMocks()
+		gorest_mock.DeletehMocks()
 		gorest_mock.AddMock(gorest_mock.Mock{
 			Method:             http.MethodGet,
 			Url:                "https://api.github.com",
@@ -78,7 +78,7 @@ func TestGetEndpoints(t *testing.T) {
 
 	t.Run("TestNoError", func(t *testing.T) {
 		// Initialization
-		gorest_mock.FlushMocks()
+		gorest_mock.DeletehMocks()
 		gorest_mock.AddMock(gorest_mock.Mock{
 			Method:             http.MethodGet,
 			Url:                "https://api.github.com",

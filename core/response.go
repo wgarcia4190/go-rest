@@ -1,4 +1,4 @@
-package gorest
+package core
 
 import (
 	"encoding/json"
