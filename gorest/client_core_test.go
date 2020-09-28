@@ -81,7 +81,9 @@ func TestGetRequestHeaders(t *testing.T) {
 	commonHeaders := make(http.Header)
 	commonHeaders.Set("Content-Type", "application/json")
 	commonHeaders.Set("User-Agent", "go-rest-client-agent")
-	client.Headers = commonHeaders
+	client.builder = &clientBuilder{
+		headers: commonHeaders,
+	}
 
 	// Execution
 	requestHeaders := make(http.Header)
