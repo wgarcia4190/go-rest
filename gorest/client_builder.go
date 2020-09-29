@@ -22,6 +22,7 @@ type ClientBuilder interface {
 	DisableTimeouts(bool) ClientBuilder
 	SetHttpClient(*http.Client) ClientBuilder
 	SetUserAgent(string) ClientBuilder
+	SetBaseUrl(string) ClientBuilder
 
 	Build() Client
 }
@@ -33,6 +34,7 @@ type clientBuilder struct {
 	responseTimeout    time.Duration
 	disableTimeouts    bool
 	userAgent          string
+	baseUrl            string
 	client             core.HttpClient
 }
 
@@ -62,6 +64,11 @@ func (c *clientBuilder) Build() Client {
 		}
 	})
 	return &client
+}
+
+func (c *clientBuilder) SetBaseUrl(baseUrl string) ClientBuilder {
+	c.baseUrl = baseUrl
+	return c
 }
 
 func (c *clientBuilder) SetHeaders(headers http.Header) ClientBuilder {

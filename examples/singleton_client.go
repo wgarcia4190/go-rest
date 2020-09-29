@@ -21,6 +21,7 @@ func getHttpClient() gorest.Client {
 		SetConnectionTimeout(2 * time.Second).
 		SetResponseTimeout(3 * time.Second).
 		SetUserAgent("test-user-agent").
+		//SetBaseUrl("https://api.github.com").
 		Build()
 	return client
 }

@@ -2,6 +2,7 @@ package gorest
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"sync"
 
@@ -31,39 +32,43 @@ type httpClient struct {
 }
 
 func (c *httpClient) GetWithContext(context context.Context, url string, headers ...http.Header) (*core.Response, error) {
-	return c.do(context, http.MethodGet, url, getHeaders(headers...), nil)
+	return c.do(context, http.MethodGet, getUrl(c.builder.baseUrl, url), getHeaders(headers...), nil)
 }
 func (c *httpClient) PostWithContext(context context.Context, url string, body interface{}, headers ...http.Header) (*core.Response, error) {
-	return c.do(context, http.MethodPost, url, getHeaders(headers...), body)
+	return c.do(context, http.MethodPost, getUrl(c.builder.baseUrl, url), getHeaders(headers...), body)
 }
 func (c *httpClient) PutWithContext(context context.Context, url string, body interface{}, headers ...http.Header) (*core.Response, error) {
-	return c.do(context, http.MethodPut, url, getHeaders(headers...), body)
+	return c.do(context, http.MethodPut, getUrl(c.builder.baseUrl, url), getHeaders(headers...), body)
 }
 func (c *httpClient) PatchWithContext(context context.Context, url string, body interface{}, headers ...http.Header) (*core.Response, error) {
-	return c.do(context, http.MethodPatch, url, getHeaders(headers...), body)
+	return c.do(context, http.MethodPatch, getUrl(c.builder.baseUrl, url), getHeaders(headers...), body)
 }
 func (c *httpClient) DeleteWithContext(context context.Context, url string, headers ...http.Header) (*core.Response, error) {
-	return c.do(context, http.MethodDelete, url, getHeaders(headers...), nil)
+	return c.do(context, http.MethodDelete, getUrl(c.builder.baseUrl, url), getHeaders(headers...), nil)
 }
 func (c *httpClient) OptionsWithContext(context context.Context, url string, headers ...http.Header) (*core.Response, error) {
-	return c.do(context, http.MethodOptions, url, getHeaders(headers...), nil)
+	return c.do(context, http.MethodOptions, getUrl(c.builder.baseUrl, url), getHeaders(headers...), nil)
 }
 
 func (c *httpClient) Get(url string, headers ...http.Header) (*core.Response, error) {
-	return c.GetWithContext(context.Background(), url, getHeaders(headers...))
+	return c.GetWithContext(context.Background(), url, headers...)
 }
 func (c *httpClient) Post(url string, body interface{}, headers ...http.Header) (*core.Response, error) {
-	return c.PostWithContext(context.Background(), url, body, getHeaders(headers...))
+	return c.PostWithContext(context.Background(), url, body, headers...)
 }
 func (c *httpClient) Put(url string, body interface{}, headers ...http.Header) (*core.Response, error) {
-	return c.PutWithContext(context.Background(), url, body, getHeaders(headers...))
+	return c.PutWithContext(context.Background(), url, body, headers...)
 }
 func (c *httpClient) Patch(url string, body interface{}, headers ...http.Header) (*core.Response, error) {
-	return c.PatchWithContext(context.Background(), url, body, getHeaders(headers...))
+	return c.PatchWithContext(context.Background(), url, body, headers...)
 }
 func (c *httpClient) Delete(url string, headers ...http.Header) (*core.Response, error) {
-	return c.DeleteWithContext(context.Background(), url, getHeaders(headers...))
+	return c.DeleteWithContext(context.Background(), url, headers...)
 }
 func (c *httpClient) Options(url string, headers ...http.Header) (*core.Response, error) {
-	return c.OptionsWithContext(context.Background(), url, getHeaders(headers...))
+	return c.OptionsWithContext(context.Background(), url, headers...)
+}
+
+func getUrl(baseUrl string, path string) string {
+	return fmt.Sprintf("%s%s", baseUrl, path)
 }
