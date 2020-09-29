@@ -15,7 +15,7 @@ func TestMain(m *testing.M) {
 	fmt.Println("About to start test cases for package 'examples'")
 
 	// Tell the HTTP library to mock any further requests from here.
-	gorest_mock.StartMockServer()
+	gorest_mock.MockupServer.Start()
 
 	os.Exit(m.Run())
 }
@@ -24,8 +24,8 @@ func TestGetEndpoints(t *testing.T) {
 
 	t.Run("TestErrorFetchingFromGithub", func(t *testing.T) {
 		// Initialization
-		gorest_mock.DeletehMocks()
-		gorest_mock.AddMock(gorest_mock.Mock{
+		gorest_mock.MockupServer.DeleteMocks()
+		gorest_mock.MockupServer.AddMock(gorest_mock.Mock{
 			Method: http.MethodGet,
 			Url:    "https://api.github.com",
 			Error:  errors.New("timeout getting github endpoints"),
@@ -51,8 +51,8 @@ func TestGetEndpoints(t *testing.T) {
 
 	t.Run("TestErrorUnmarshalResponseBody", func(t *testing.T) {
 		// Initialization
-		gorest_mock.DeletehMocks()
-		gorest_mock.AddMock(gorest_mock.Mock{
+		gorest_mock.MockupServer.DeleteMocks()
+		gorest_mock.MockupServer.AddMock(gorest_mock.Mock{
 			Method:             http.MethodGet,
 			Url:                "https://api.github.com",
 			ResponseStatusCode: http.StatusOK,
@@ -78,8 +78,8 @@ func TestGetEndpoints(t *testing.T) {
 
 	t.Run("TestNoError", func(t *testing.T) {
 		// Initialization
-		gorest_mock.DeletehMocks()
-		gorest_mock.AddMock(gorest_mock.Mock{
+		gorest_mock.MockupServer.DeleteMocks()
+		gorest_mock.MockupServer.AddMock(gorest_mock.Mock{
 			Method:             http.MethodGet,
 			Url:                "https://api.github.com",
 			ResponseStatusCode: http.StatusOK,

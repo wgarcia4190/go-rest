@@ -13,12 +13,12 @@ type GithubError struct {
 
 type Repository struct {
 	Name        string `json:"name"`
-	Description string `json:"description"`
+	Description string `json:"description,omitempty"`
 	Private     bool   `json:"private"`
 }
 
 func CreateRepo(request Repository) (*Repository, error) {
-	response, err := httpClient.Post("https://api.github.com", request)
+	response, err := httpClient.Post("https://api.github.com/user/repos", request)
 	if err != nil {
 		return nil, err
 	}

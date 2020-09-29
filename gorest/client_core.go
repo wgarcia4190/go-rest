@@ -6,9 +6,12 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/wgarcia4190/go-rest/gorest_mock"
 
 	"github.com/wgarcia4190/go-rest/core"
 
@@ -18,41 +21,47 @@ import (
 func (c *httpClient) do(context context.Context, method string, url string, headers http.Header, body interface{}) (*core.Response, error) {
 	fullHeaders := c.getRequestHeaders(headers)
 
-	requestBody, bodyErr := c.getRequestBody(fullHeaders.Get(gomime.HeaderContentType), body)
-
-	if bodyErr != nil {
-		return nil, errors.New("unable to marshal the body")
+	requestBody, err := c.getRequestBody(fullHeaders.Get("Content-Type"), body)
+	if err != nil {
+		return nil, err
 	}
 
-	request, reqErr := http.NewRequestWithContext(context, method, url, bytes.NewBuffer(requestBody))
-
-	if reqErr != nil {
+	request, err := http.NewRequest(method, url, bytes.NewBuffer(requestBody))
+	if err != nil {
 		return nil, errors.New("unable to create a new request")
 	}
 
 	request.Header = fullHeaders
 
-	response, err := c.client.Do(request)
-
+	response, err := c.getClient().Do(request)
 	if err != nil {
 		return nil, err
 	}
 
+	defer func() {
+		if err := response.Body.Close(); err != nil {
+			fmt.Println("Error closing response")
+		}
+	}()
 	responseBody, err := ioutil.ReadAll(response.Body)
-
 	if err != nil {
 		return nil, err
 	}
 
-	defer response.Body.Close()
 	finalResponse := core.Response{
 		Status:     response.Status,
 		StatusCode: response.StatusCode,
 		Headers:    response.Header,
 		Body:       responseBody,
 	}
-
 	return &finalResponse, nil
+}
+
+func (c *httpClient) getClient() core.HttpClient {
+	if gorest_mock.MockupServer.IsEnabled() {
+		return gorest_mock.MockupServer.GetMockedClient()
+	}
+	return c.client
 }
 
 func (c *httpClient) getRequestBody(contentType string, body interface{}) ([]byte, error) {

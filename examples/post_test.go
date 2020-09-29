@@ -2,6 +2,7 @@ package examples
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -10,8 +11,8 @@ import (
 
 func TestCreateRepo(t *testing.T) {
 	t.Run("TimeoutFromGithub", func(t *testing.T) {
-		gorest_mock.DeletehMocks()
-		gorest_mock.AddMock(gorest_mock.Mock{
+		gorest_mock.MockupServer.DeleteMocks()
+		gorest_mock.MockupServer.AddMock(gorest_mock.Mock{
 			Method:      http.MethodPost,
 			Url:         "https://api.github.com/user/repos",
 			RequestBody: `{"name": "test-repo", "private": true}`,
@@ -34,13 +35,14 @@ func TestCreateRepo(t *testing.T) {
 		}
 
 		if err != nil && err.Error() != "timeout from github" {
+			fmt.Println(err.Error())
 			t.Error("invalid error message")
 		}
 	})
 
 	t.Run("NoError", func(t *testing.T) {
-		gorest_mock.DeletehMocks()
-		gorest_mock.AddMock(gorest_mock.Mock{
+		gorest_mock.MockupServer.DeleteMocks()
+		gorest_mock.MockupServer.AddMock(gorest_mock.Mock{
 			Method:             http.MethodPost,
 			Url:                "https://api.github.com/user/repos",
 			RequestBody:        `{"name": "test-repo", "private": true}`,
@@ -56,6 +58,7 @@ func TestCreateRepo(t *testing.T) {
 		repo, err := CreateRepo(repository)
 
 		if err != nil {
+			fmt.Println(err.Error())
 			t.Error("no error expected when we get a valid response")
 		}
 

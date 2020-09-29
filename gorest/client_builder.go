@@ -4,6 +4,8 @@ import (
 	"net"
 	"net/http"
 	"time"
+
+	"github.com/wgarcia4190/go-rest/core"
 )
 
 const (
@@ -31,7 +33,7 @@ type clientBuilder struct {
 	responseTimeout    time.Duration
 	disableTimeouts    bool
 	userAgent          string
-	client             *http.Client
+	client             core.HttpClient
 }
 
 func NewBuilder() ClientBuilder {
